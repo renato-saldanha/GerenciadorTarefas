@@ -20,9 +20,7 @@ uses
 begin
   Application.Initialize;
   Application.CreateForm(TdmCon, dmCon);
-  Application.CreateForm(TfrmPrincipal, frmPrincipal);
-  Application.CreateForm(TDmCadUsuarios, DmCadUsuarios);
   Application.CreateForm(TdmPrincipal, dmPrincipal);
-  Application.CreateForm(TDmCadTarefas, DmCadTarefas);
+  Application.CreateForm(TfrmPrincipal, frmPrincipal);
   Application.Run;
 end.

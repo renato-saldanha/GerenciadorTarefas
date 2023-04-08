@@ -21,4 +21,9 @@ object dmPrincipal: TdmPrincipal
     Left = 135
     Top = 62
   end
+  object qryAux: TSQLQuery
+    Params = <>
+    Left = 232
+    Top = 104
+  end
 end

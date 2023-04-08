@@ -12,6 +12,7 @@ object frmCadUsuarios: TfrmCadUsuarios
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCreate = FormCreate
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96

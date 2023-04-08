@@ -51,6 +51,7 @@ type
     procedure actIncluirExecute(Sender: TObject);
     procedure edtCodUsuarioExit(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -67,18 +68,23 @@ implementation
 uses uFrmLogin, Uteis, uDmConsulta, uDmLogin, uFrmConsulta, uFrmCadUsuarios,
   uDmPrincipal, uFrmCadTarefas;
 
-procedure TfrmPrincipal.FormKeyPress(Sender: TObject; var Key: Char);
+procedure TfrmPrincipal.FormCreate(Sender: TObject);
+var
+  Usuario: String;
 begin
-  if Key = #13 then
-      SelectNext(Self as TWinControl, True, false);
+  Application.CreateForm(TdmLogin, dmLogin);
+  Application.CreateForm(TdmConsulta, dmConsulta);
+
+  //Verificação e criação do Login ADM
+  Usuario:= dmConsulta.GetNomeUsuario('0');
+
+  if (Usuario = USUARIO_INEXISTENTE) then
+    dmPrincipal.CriarADM();
 end;
 
 procedure TfrmPrincipal.FormShow(Sender: TObject);
 begin
   try
-    Application.CreateForm(TdmLogin, dmLogin);
-    Application.CreateForm(TdmConsulta, dmConsulta);
-
     Application.CreateForm(TfrmLogin, frmLogin);
     frmLogin.ShowModal;
 
@@ -89,6 +95,12 @@ begin
   except on E : Exception do
     MsgErroCriacao(Self);
   end;
+end;
+
+procedure TfrmPrincipal.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = #13 then
+      SelectNext(Self as TWinControl, True, false);
 end;
 
 procedure TfrmPrincipal.cmbSituacaoKeyDown(Sender: TObject; var Key: Word;

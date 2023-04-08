@@ -14,6 +14,7 @@ object frmCadTarefas: TfrmCadTarefas
   KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel

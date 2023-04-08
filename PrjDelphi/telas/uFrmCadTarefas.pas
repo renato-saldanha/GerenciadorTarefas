@@ -43,6 +43,7 @@ type
       Shift: TShiftState);
     procedure edtCodTarefaExit(Sender: TObject);
     procedure edtCodUsuarioExit(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
 
     { Private declarations }
@@ -166,6 +167,11 @@ end;
 procedure TfrmCadTarefas.edtCodUsuarioKeyPress(Sender: TObject; var Key: Char);
 begin
   Key:= SomenteNumeros(Key);
+end;
+
+procedure TfrmCadTarefas.FormCreate(Sender: TObject);
+begin
+  Application.CreateForm(TDmCadTarefas, DmCadTarefas);
 end;
 
 end.

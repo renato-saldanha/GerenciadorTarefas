@@ -144,7 +144,7 @@ begin
     try
       Application.CreateForm(TfrmConsulta, frmConsulta);
 
-      sSQL:= 'SELECT CODIGO, NOME, CASE WHEN DIREITO = 0 THEN ''SUPERVISOR'' ELSE ''OPERADOR'' END DIREITO FROM USUARIOS ';
+      sSQL:= 'SELECT CODIGO, NOME, SENHA, DIREITO, CASE WHEN DIREITO = 0 THEN ''SUPERVISOR'' ELSE ''OPERADOR'' END DIREITO_DESCRICAO FROM USUARIOS ';
 
       dmConsulta.ConsultarUsuarios(sSQL + SQLWhere);
 
@@ -157,13 +157,13 @@ begin
       frmConsulta.Caption:= 'Consultar Usuários';
       frmConsulta.ShowModal;
 
-      if (CodUsu <> 0) then
+      if (CodUsu <> 0) or (dmConsulta.cdsConsulta.FieldByName('NOME').AsString = 'ADM') then
       begin
         if (edtCodUsuario <> nil) then
           edtCodUsuario.Text  := dmConsulta.cdsConsulta.FieldByName('CODIGO').AsString;
 
         if (edtNomeUsuario <> nil) then
-          edtNomeUsuario.Text := dmConsulta.cdsConsulta.FieldByName('NOME').AsString;;
+          edtNomeUsuario.Text := dmConsulta.cdsConsulta.FieldByName('NOME').AsString;
 
         if (edtSenha <> nil) then
           edtSenha.Text := dmConsulta.cdsConsulta.FieldByName('SENHA').AsString;
@@ -171,7 +171,7 @@ begin
         if (cmbDireitos <> nil) then
           cmbDireitos.ItemIndex := dmConsulta.cdsConsulta.FieldByName('DIREITO').AsInteger;
 
-        SUPERVISOR:= dmConsulta.cdsConsulta.FieldByName('DIREITO').AsString = 'SUPERVISOR';
+        SUPERVISOR:= dmConsulta.cdsConsulta.FieldByName('DIREITO_DESCRICAO').AsString = 'SUPERVISOR';
 
         Consultar:= (edtCodUsuario = nil) and (edtNomeUsuario = nil) and (SQLWhere = '');
       end;

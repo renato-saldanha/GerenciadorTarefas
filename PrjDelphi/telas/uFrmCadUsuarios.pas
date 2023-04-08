@@ -38,6 +38,7 @@ type
     procedure actSalvarExecute(Sender: TObject);
     procedure edtCodUsuarioExit(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure FormCreate(Sender: TObject);
   private
     function SenhaValidada(Senha, ConfirmacaoSenha: String): Boolean;
     { Private declarations }
@@ -102,7 +103,7 @@ begin
   //Seta se há ou não  usuário
   NomeUsuario:= dmConsulta.GetNomeUsuario(edtCodUsuario.Text);
 
-  if (NomeUsuario = USUARIO_INEXISTENTE) then
+  if (NomeUsuario = USUARIO_INEXISTENTE) or (NomeUsuario = 'ADM') then
   begin
     if (MessageDlg('Deseja confirmar a inclusão do registro?', mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
     begin
@@ -141,6 +142,11 @@ end;
 procedure TfrmCadUsuarios.edtCodUsuarioKeyPress(Sender: TObject; var Key: Char);
 begin
   Key:= SomenteNumeros(Key);
+end;
+
+procedure TfrmCadUsuarios.FormCreate(Sender: TObject);
+begin
+  Application.CreateForm(TDmCadUsuarios, DmCadUsuarios);
 end;
 
 procedure TfrmCadUsuarios.FormKeyPress(Sender: TObject; var Key: Char);

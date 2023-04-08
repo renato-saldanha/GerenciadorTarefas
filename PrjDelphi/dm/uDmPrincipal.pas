@@ -11,12 +11,14 @@ type
     qryConsTarefas: TSQLQuery;
     cdsConsTarefas: TClientDataSet;
     dspConsTarefas: TDataSetProvider;
+    qryAux: TSQLQuery;
   private
 
     { Private declarations }
   public
     function ConsultarTarefas(CodUsuario : String; Situacao: Integer): Boolean;
     function LimparConsultaTarefas: Boolean;
+    procedure CriarADM();
     { Public declarations }
   end;
 
@@ -67,6 +69,19 @@ begin
       Result:= False;
       MsgErroConexao(cdsConsTarefas);
     end;
+  end;
+end;
+
+procedure TdmPrincipal.CriarADM();
+begin
+  try
+    qryAux.Close;
+    qryAux.SQLConnection:= dmCon.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add('INSERT INTO USUARIOS(CODIGO, NOME, SENHA, DIREITO) VALUES(0, ''ADM'', ''123'', 0)');
+    qryAux.ExecSQL;
+  except on E: Exception do
+    MsgErroConexao(qryAux);
   end;
 end;
 
