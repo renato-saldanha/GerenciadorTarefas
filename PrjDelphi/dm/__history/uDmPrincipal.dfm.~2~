@@ -1,0 +1,20 @@
+object dmPrincipal: TdmPrincipal
+  OldCreateOrder = False
+  Height = 265
+  Width = 384
+  object SQLQuery1: TSQLQuery
+    Params = <>
+    Left = 40
+    Top = 48
+  end
+  object ClientDataSet1: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    Left = 160
+    Top = 56
+  end
+  object DataSetProvider1: TDataSetProvider
+    Left = 95
+    Top = 70
+  end
+end

@@ -1,0 +1,24 @@
+object dmConsulta: TdmConsulta
+  OldCreateOrder = False
+  Height = 196
+  Width = 267
+  object qryConsUsuarios: TSQLQuery
+    Params = <>
+    Left = 32
+    Top = 8
+  end
+  object cdsConsUsuarios: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    ProviderName = 'dspLogin'
+    Left = 32
+    Top = 112
+  end
+  object dspConsUsuarios: TDataSetProvider
+    DataSet = qryConsUsuarios
+    Options = [poAllowCommandText, poUseQuoteChar]
+    UpdateMode = upWhereKeyOnly
+    Left = 39
+    Top = 62
+  end
+end

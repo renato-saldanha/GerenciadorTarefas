@@ -1,0 +1,47 @@
+unit uDm;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.DB, Data.SqlExpr, Data.DBXFirebird;
+
+type
+  TdmCon = class(TDataModule)
+    con: TSQLConnection;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    procedure AbrirQuery(qry: TSQLQuery; sSQL: string);
+  end;
+
+var
+  dmCon: TdmCon;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+uses Uteis;
+
+{$R *.dfm}
+
+{ TdmCon }
+
+
+
+{ TdmCon }
+
+procedure TdmCon.AbrirQuery(qry: TSQLQuery; sSQL: string);
+begin
+    try
+      qry.Close;
+      qry.SQL.Clear;
+      qry.SQL.Text:= sSQL;
+      qry.Open;
+    except on E: Exception do
+      MsgErroConexao(qry);
+    end;
+end;
+
+end.

@@ -1,0 +1,127 @@
+unit uFrmConsUsuarios;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.StdCtrls, Vcl.ExtCtrls,
+  Vcl.Grids, Vcl.DBGrids, Data.FMTBcd, Data.SqlExpr, System.Actions,
+  Vcl.ActnList, Vcl.Buttons, Vcl.ComCtrls;
+
+type
+  TAbrirConsulta = class
+    private
+    public
+    class function AbrirConsulta(edtCodUsuario: TLabeledEdit; edtNomeUsuario, edtSenha: TEdit; cmbDireitos: TComboBox; SQLWhere: String): String;
+  end;
+
+type
+  TfrmConsUsuarios = class(TForm)
+    dbgConsulta: TDBGrid;
+    Panel1: TPanel;
+    dsConsulta: TDataSource;
+    ActionList1: TActionList;
+    StatusBar1: TStatusBar;
+    btnSair: TBitBtn;
+    btnSelecionar: TBitBtn;
+    actSelecionar: TAction;
+    actSair: TAction;
+    procedure actSairExecute(Sender: TObject);
+    procedure actSelecionarExecute(Sender: TObject);
+    procedure dbgConsultaDblClick(Sender: TObject);
+    procedure dbgConsultaKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormShow(Sender: TObject);
+  private
+    { Private declarations }
+
+  public
+    { Public declarations }
+
+  end;
+
+var
+  frmConsUsuarios: TfrmConsUsuarios;
+  CodUsu: Integer;
+  Consultar: boolean;
+
+implementation
+
+{$R *.dfm}
+
+uses uDmConsulta, Uteis;
+
+{ TfrmConsulta }
+
+class function TAbrirConsulta.AbrirConsulta(edtCodUsuario: TLabeledEdit; edtNomeUsuario, edtSenha: TEdit; cmbDireitos: TComboBox; SQLWhere: String): String;
+begin
+   try
+    try
+      Application.CreateForm(TfrmConsUsuarios, frmConsUsuarios);
+
+      sSQL:= 'SELECT CODIGO, NOME, SENHA, DIREITO FROM USUARIOS ';
+
+      dmConsulta.ConsultarUsuarios(sSQL + SQLWhere);
+
+      frmConsUsuarios.ShowModal;
+
+      if (CodUsu <> 0) then
+      begin
+        if (edtCodUsuario <> nil) then
+          edtCodUsuario.Text  := dmConsulta.cdsConsUsuarios.FieldByName('CODIGO').AsString;
+
+        if (edtNomeUsuario <> nil) then
+          edtNomeUsuario.Text := dmConsulta.cdsConsUsuarios.FieldByName('NOME').AsString;;
+
+        if (edtSenha <> nil) then
+          edtSenha.Text := dmConsulta.cdsConsUsuarios.FieldByName('SENHA').AsString;
+
+        if (cmbDireitos <> nil) then
+          cmbDireitos.ItemIndex := dmConsulta.cdsConsUsuarios.FieldByName('SENHA').AsInteger;
+
+        Consultar:= (edtCodUsuario = nil) and (edtNomeUsuario = nil) and (SQLWhere = '');
+      end;
+    except on E: Exception do
+      MsgErroCriacao(frmConsUsuarios);
+    end;
+  finally
+    FreeAndNil(frmConsUsuarios);
+  end;
+end;
+
+procedure TfrmConsUsuarios.FormShow(Sender: TObject);
+begin
+  if (Consultar) then
+    btnSelecionar.Enabled:= False;
+end;
+
+procedure TfrmConsUsuarios.actSairExecute(Sender: TObject);
+begin
+  Self.Close;
+end;
+
+procedure TfrmConsUsuarios.actSelecionarExecute(Sender: TObject);
+begin
+  if not(dbgConsulta.DataSource.DataSet.IsEmpty) then
+  begin
+    CodUsu:= dbgConsulta.DataSource.DataSet.FieldByName('CODIGO').AsInteger;
+    Close;
+  end;
+end;
+
+procedure TfrmConsUsuarios.dbgConsultaDblClick(Sender: TObject);
+begin
+  actSelecionarExecute(nil);
+end;
+
+procedure TfrmConsUsuarios.dbgConsultaKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key = VK_RETURN) then
+    actSelecionarExecute(nil);
+
+  if (Key = VK_ESCAPE) then
+    actSairExecute(nil);
+end;
+
+end.

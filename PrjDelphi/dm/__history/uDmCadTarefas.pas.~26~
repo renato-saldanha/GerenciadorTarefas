@@ -1,0 +1,120 @@
+unit uDmCadTarefas;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.FMTBcd, Data.DB, Data.SqlExpr, Vcl.Dialogs;
+
+type
+  TDmCadTarefas = class(TDataModule)
+    qryAux: TSQLQuery;
+  private
+
+    function GetUltimoCodTarefa: String;
+    { Private declarations }
+  public
+    function AlterarTarefa(CodTarefa, Nome: string; Tipo: Integer): Integer;
+    function ExcluirTarefa(CodTarefa: string): Integer;
+    function InserirTarefa(CodUsuario, Nome: string; Tipo: Integer): Integer;
+    { Public declarations }
+  end;
+
+var
+  DmCadTarefas: TDmCadTarefas;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+uses uDm, Uteis;
+
+{$R *.dfm}
+
+function TDmCadTarefas.ExcluirTarefa(CodTarefa: string): Integer;
+begin
+  try
+    qryAux.Close;
+    qryAux.SQLConnection:= dmCon.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add('DELETE FROM TAREFAS WHERE CODIGO = ' + CodTarefa);
+    Result:= qryAux.ExecSQL();
+  except on E: Exception do
+    MsgErroConexao(qryAux);
+  end;
+end;
+
+function TDmCadTarefas.InserirTarefa(CodUsuario, Nome: string; Tipo: Integer): Integer;
+var
+  CodTarefa: String;
+begin
+  try
+    sSQL:= ' INSERT INTO TAREFAS (NOME, TIPO) ' +
+           ' VALUES(' + QuotedStr(Nome) +
+           ',' + IntToStr(Tipo) + ')';
+
+    qryAux.Close;
+    qryAux.SQLConnection:= dmCon.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add(sSQL);
+    qryAux.ExecSQL();
+
+    CodTarefa:= GetUltimoCodTarefa();
+
+    sSQL:= ' INSERT INTO USUARIO_TAREFA (COD_USUARIO, COD_TAREFA) ' +
+           ' VALUES(' + CodUsuario +
+           ',' + CodTarefa + ')';
+
+    qryAux.Close;
+    qryAux.SQLConnection:= dmCon.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add(sSQL);
+    Result:= qryAux.ExecSQL();
+
+    ShowMessage('Registro inserido!');
+
+  except on E: Exception do
+    MsgErroConexao(qryAux);
+  end;
+end;
+
+function TDmCadTarefas.AlterarTarefa(CodTarefa, Nome: string; Tipo: Integer): Integer;
+begin
+  try
+    sSQL:= ' UPDATE TAREFAS SET ' +
+           ' NOME = ' + QuotedStr(Nome) +
+           ', TIPO = ' + IntToStr(Tipo) +
+           ' WHERE CODIGO = ' + CodTarefa;
+
+    qryAux.Close;
+    qryAux.SQLConnection:= dmCon.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add(sSQL);
+    Result:= qryAux.ExecSQL();
+
+    ShowMessage('Registro alterado!');
+  except on E: Exception do
+    MsgErroConexao(qryAux);
+  end;
+end;
+
+function TDmCadTarefas.GetUltimoCodTarefa(): String;
+begin
+  try
+    sSQL:= ' SELECT FIRST 1 CODIGO FROM TAREFAS ORDER BY CODIGO DESC';
+
+    qryAux.Close;
+    qryAux.SQLConnection:= dmCon.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add(sSQL);
+    qryAux.Open();
+
+    if (qryAux.FieldByName('CODIGO').AsInteger > 0) then
+      Result:= qryAux.FieldByName('CODIGO').AsString
+    else
+      Result:= '1';
+  except on E: Exception do
+    MsgErroConexao(qryAux);
+  end;
+end;
+
+end.

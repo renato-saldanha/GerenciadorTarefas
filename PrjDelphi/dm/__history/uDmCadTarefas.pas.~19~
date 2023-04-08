@@ -1,0 +1,94 @@
+unit uDmCadTarefas;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.FMTBcd, Data.DB, Data.SqlExpr;
+
+type
+  TDmCadTarefas = class(TDataModule)
+    qryAux: TSQLQuery;
+  private
+
+    function GetUltimoCodTarefa: String;
+    { Private declarations }
+  public
+    function AlterarTarefa(CodTarefa, Nome: string; Tipo: Integer): Integer;
+    function ExcluirTarefa(CodTarefa: string): Integer;
+    function InserirTarefa(CodUsuario, Nome: string; Tipo: Integer): Integer;
+    { Public declarations }
+  end;
+
+var
+  DmCadTarefas: TDmCadTarefas;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+uses uDm, Uteis;
+
+{$R *.dfm}
+
+function TDmCadTarefas.ExcluirTarefa(CodTarefa: string): Integer;
+begin
+    qryAux.Close;
+    qryAux.SQLConnection:= dmCon.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add('DELETE FROM TAREFAS WHERE CODIGO = ' + CodTarefa);
+    Result:= qryAux.ExecSQL();
+end;
+
+function TDmCadTarefas.InserirTarefa(CodUsuario, Nome: string; Tipo: Integer): Integer;
+var
+  CodTarefa: String;
+begin
+    sSQL:= ' INSERT INTO TAREFAS (NOME, TIPO) ' +
+           ' VALUES(' + QuotedStr(Nome) +
+           ',' + IntToStr(Tipo) + ')';
+
+    qryAux.Close;
+    qryAux.SQLConnection:= dmCon.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add(sSQL);
+
+    CodTarefa:= GetUltimoCodTarefa();
+
+    sSQL:= ' INSERT INTO USUARIO_TAREFA (COD_USUARIO, COD_TAREFA) ' +
+           ' VALUES(' + CodUsuario +
+           ',' + CodTarefa + ')';
+
+    qryAux.Close;
+    qryAux.SQLConnection:= dmCon.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add(sSQL);
+    Result:= qryAux.ExecSQL();
+end;
+
+function TDmCadTarefas.AlterarTarefa(CodTarefa, Nome: string; Tipo: Integer): Integer;
+begin
+    sSQL:= ' UPDATE TAREFAS SET ' +
+           ' NOME = ' + QuotedStr(Nome) +
+           ', TIPO = ' + IntToStr(Tipo) +
+           ' WHERE CODIGO = ' + CodTarefa;
+
+    qryAux.Close;
+    qryAux.SQLConnection:= dmCon.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add(sSQL);
+    Result:= qryAux.ExecSQL();
+end;
+
+function TDmCadTarefas.GetUltimoCodTarefa(): String;
+begin
+    sSQL:= ' SELECT FIRST 1 CODIGO FROM TAREFAS ORDER BY DESC';
+
+    qryAux.Close;
+    qryAux.SQLConnection:= dmCon.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add(sSQL);
+    qryAux.Open();
+    Result:= qryAux.FieldByName('CODIGO').AsString;
+end;
+
+end.

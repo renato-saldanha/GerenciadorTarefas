@@ -1,0 +1,25 @@
+unit uDmCadTarefas;
+
+interface
+
+uses
+  System.SysUtils, System.Classes;
+
+type
+  TdmCadTarefas = class(TDataModule)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  dmCadTarefas: TdmCadTarefas;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.

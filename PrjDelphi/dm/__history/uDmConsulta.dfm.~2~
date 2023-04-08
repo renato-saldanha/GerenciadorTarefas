@@ -1,0 +1,5 @@
+object dmConsulta: TdmConsulta
+  OldCreateOrder = False
+  Height = 196
+  Width = 267
+end

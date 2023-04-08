@@ -1,0 +1,49 @@
+object dmConsulta: TdmConsulta
+  OldCreateOrder = False
+  Height = 196
+  Width = 267
+  object qryConsUsuarios: TSQLQuery
+    Params = <>
+    Left = 32
+    Top = 8
+  end
+  object cdsConsUsuarios: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    ProviderName = 'dspConsUsuarios'
+    Left = 32
+    Top = 112
+  end
+  object dspConsUsuarios: TDataSetProvider
+    DataSet = qryConsUsuarios
+    Options = [poAllowCommandText, poUseQuoteChar]
+    UpdateMode = upWhereKeyOnly
+    Left = 39
+    Top = 62
+  end
+  object qryAux: TSQLQuery
+    MaxBlobSize = -1
+    Params = <>
+    Left = 224
+    Top = 8
+  end
+  object qryConsTarefas: TSQLQuery
+    Params = <>
+    Left = 128
+    Top = 8
+  end
+  object cdsConsTarefas: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    ProviderName = 'dspConsTarefas'
+    Left = 128
+    Top = 112
+  end
+  object dspConsTarefas: TDataSetProvider
+    DataSet = qryConsTarefas
+    Options = [poAllowCommandText, poUseQuoteChar]
+    UpdateMode = upWhereKeyOnly
+    Left = 135
+    Top = 62
+  end
+end

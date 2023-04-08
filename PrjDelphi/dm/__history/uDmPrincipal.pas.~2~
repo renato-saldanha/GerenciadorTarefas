@@ -1,0 +1,50 @@
+unit uDmPrincipal;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.FMTBcd, Datasnap.Provider,
+  Datasnap.DBClient, Data.DB, Data.SqlExpr;
+
+type
+  TdmPrincipal = class(TDataModule)
+    qryConsTarefas: TSQLQuery;
+    cdsConsTarefas: TClientDataSet;
+    dspConsTarefas: TDataSetProvider;
+  private
+    function ConsultarTarefas(sSQL: String): Boolean;
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  dmPrincipal: TdmPrincipal;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+uses uDm;
+
+{$R *.dfm}
+
+function TdmPrincipal.ConsultarTarefas(sSQL: String): Boolean;
+begin
+  Result:= False;
+
+  try
+    qryConsTarefas.Close;
+    cdsConsTarefas.Close;
+    qryConsTarefas.SQLConnection:= dmCon.con;
+    cdsConsTarefas.CommandText:= sSQL;
+    cdsConsTarefas.Open;
+  except on E: Exception do
+    begin
+      Result:= False;
+      MsgErroConexao(cdsConsTarefas);
+    end;
+  end;
+end;
+
+end.

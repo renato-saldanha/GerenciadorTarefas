@@ -1,0 +1,46 @@
+unit uDmLogin;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.FMTBcd, Datasnap.Provider,
+  Datasnap.DBClient, Data.DB, Data.SqlExpr;
+
+type
+  TdmLogin = class(TDataModule)
+    qryLogin: TSQLQuery;
+    cdsLogin: TClientDataSet;
+    dspLogin: TDataSetProvider;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    function SenhaValidada(senha:string): boolean;
+
+  end;
+
+var
+  dmLogin: TdmLogin;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+uses uDm, Uteis;
+
+{$R *.dfm}
+
+{ TdmLogin }
+
+
+
+function TdmLogin.SenhaValidada(senha: string): boolean;
+begin
+  Result:= false;
+  sSQL:= ' SELECT SENHA FROM USUARIOS ' +
+         ' WHERE SENHA = ' + senha;
+  dmCon.AbrirQuery(qryLogin, sSQL);
+
+end;
+
+end.

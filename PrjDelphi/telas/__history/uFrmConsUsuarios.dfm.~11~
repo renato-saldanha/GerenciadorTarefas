@@ -1,0 +1,83 @@
+object frmConsUsuarios: TfrmConsUsuarios
+  Left = 0
+  Top = 0
+  Caption = 'Consultar Usu'#225'rios'
+  ClientHeight = 209
+  ClientWidth = 478
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  PixelsPerInch = 96
+  TextHeight = 13
+  object dbgConsulta: TDBGrid
+    Left = 0
+    Top = 0
+    Width = 478
+    Height = 170
+    Align = alClient
+    DataSource = dsConsulta
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    ReadOnly = True
+    TabOrder = 0
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 170
+    Width = 478
+    Height = 39
+    Align = alBottom
+    TabOrder = 1
+    ExplicitWidth = 553
+    DesignSize = (
+      478
+      39)
+    object btnSair: TButton
+      Left = 376
+      Top = 3
+      Width = 99
+      Height = 32
+      Anchors = [akRight, akBottom]
+      Caption = 'Sai&r'
+      TabOrder = 0
+      ExplicitLeft = 451
+      ExplicitTop = 12
+    end
+    object btnSelecionar: TButton
+      Left = 271
+      Top = 3
+      Width = 99
+      Height = 32
+      Anchors = [akRight, akBottom]
+      Caption = '&Selecionar'
+      TabOrder = 1
+      ExplicitLeft = 346
+      ExplicitTop = 12
+    end
+  end
+  object dsConsulta: TDataSource
+    DataSet = dmConsulta.cdsConsUsuarios
+    Left = 232
+    Top = 112
+  end
+  object ActionList1: TActionList
+    Left = 328
+    Top = 64
+    object actSelecionar: TAction
+      Caption = '&Selecionar'
+    end
+    object actSair: TAction
+      Caption = 'Sai&r'
+      OnExecute = actSairExecute
+    end
+  end
+end
