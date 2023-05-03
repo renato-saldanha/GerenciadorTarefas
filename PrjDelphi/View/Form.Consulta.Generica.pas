@@ -8,7 +8,9 @@ uses
   Vcl.Grids, Vcl.DBGrids, Data.FMTBcd, Data.SqlExpr, System.Actions,
   Vcl.ActnList, Vcl.Buttons, Vcl.ComCtrls,
   Controller.Usuario,
-  Uteis, Model.Usuario;
+  Controller.Tarefa,
+  Uteis,
+  Model.Usuario;
 
 type
   TFrmConsultaGenerica = class(TForm)
@@ -70,7 +72,7 @@ begin
         if (aEdtNomeUsuario <> nil) then
           aEdtNomeUsuario.Text  := ControllerUsuario.cdsConsulta.FieldByName('NOME').AsString;
 
-        FConsultar:= ;
+        FConsultar:=  (aEdtNome = nil) and (aEdtNome = nil) and (SQLWhere = '');
       end;
     except on E: Exception do
       MsgErroCriacao(FrmConsultaGenerica);

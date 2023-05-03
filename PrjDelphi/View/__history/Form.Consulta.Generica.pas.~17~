@@ -7,16 +7,8 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.StdCtrls, Vcl.ExtCtrls,
   Vcl.Grids, Vcl.DBGrids, Data.FMTBcd, Data.SqlExpr, System.Actions,
   Vcl.ActnList, Vcl.Buttons, Vcl.ComCtrls,
-  Uteis;
-
-type
-  TAbrirConsulta = class
-    private
-    public
-    class function AbrirConsultaUsuario(edtCodUsuario: TLabeledEdit; edtNomeUsuario, edtSenha: TEdit; cmbDireitos: TComboBox; SQLWhere: String): String;
-    class function AbrirConsultaUsuarioTarefa(edtCodUsuario: TLabeledEdit; edtNomeUsuario: TEdit; SQLWhere: String): String;
-    class function AbrirConsultaTarefa(edtCodUsuario: TLabeledEdit; edtNomeUsuario: TEdit; SQLWhere: String): String;
-  end;
+  Controller.Usuario,
+  Uteis, Model.Usuario;
 
 type
   TFrmConsultaGenerica = class(TForm)
@@ -38,17 +30,17 @@ type
     procedure FormResize(Sender: TObject);
   private
     { Private declarations }
-
   public
     { Public declarations }
-
+     class function AbrirConsultaUsuario(aEdtCodUsuario, aEdtNomeUsuario, aEdtSenha: TCustomEdit; aCmbDireitos: TComboBox; aSQLWhere: String): String;
+     class function AbrirConsultaUsuarioTarefa(aEdtCodUsuario, aEdtNomeUsuario: TCustomEdit; aSQLWhere: String): String;
+     class function AbrirConsultaTarefa(aEdtCodUsuario, aEdtNomeUsuario: TCustomEdit; aSQLWhere: String): String;
   end;
 
 var
   FrmConsultaGenerica: TFrmConsultaGenerica;
-  CodUsu: Integer;
-  Consultar: boolean;
-
+  FCodUsu: Integer;
+  FConsultar: boolean;
 implementation
 
 {$R *.dfm}
@@ -56,34 +48,29 @@ implementation
 
 { TfrmConsulta }
 
-class function TAbrirConsulta.AbrirConsultaUsuarioTarefa(edtCodUsuario: TLabeledEdit; edtNomeUsuario: TEdit; SQLWhere: String): String;
+class function TFrmConsultaGenerica.AbrirConsultaUsuarioTarefa(aEdtCodUsuario, aEdtNomeUsuario: TCustomEdit; aSQLWhere: String): String;
+var
+  Usuario: TModelUsuario;
 begin
   try
     try
       Application.CreateForm(TFrmConsultaGenerica, FrmConsultaGenerica);
-
-      VPSQL:= 'SELECT CODIGO, NOME FROM USUARIOS ';
-
-      ControllerUsuario.ConsultarUsuarios(VPSQL + SQLWhere);
-
-      if (ControllerUsuario.cdsConsulta.IsEmpty) then
-      begin
-        ShowMessage('A busca não retornou registros!');
-        Exit;
-      end;
-
       FrmConsultaGenerica.Caption:= 'Consultar Usuários';
       FrmConsultaGenerica.ShowModal;
 
-      if (CodUsu <> 0) then
+      VPSQL:= 'SELECT CODIGO, NOME FROM USUARIOS ';
+
+      Usuario := ControllerUsuario.ConsultarUsuarios(VPSQL, aSQLWhere, aEdtCodUsuario, aEdtNomeUsuario);
+
+      if (Usuario <> nil) and (FCodUsu <> 0) then
       begin
-        if (edtCodUsuario <> nil) then
-          edtCodUsuario.Text  := ControllerUsuario.cdsConsulta.FieldByName('CODIGO').AsString;
+        if (aEdtNomeUsuario <> nil) then
+          aEdtNomeUsuario.Text  := ControllerUsuario.cdsConsulta.FieldByName('CODIGO').AsString;
 
-        if (edtNomeUsuario <> nil) then
-          edtNomeUsuario.Text  := ControllerUsuario.cdsConsulta.FieldByName('NOME').AsString;
+        if (aEdtNomeUsuario <> nil) then
+          aEdtNomeUsuario.Text  := ControllerUsuario.cdsConsulta.FieldByName('NOME').AsString;
 
-        Consultar:= (edtCodUsuario = nil) and (edtCodUsuario = nil) and (SQLWhere = '');
+        FConsultar:= ;
       end;
     except on E: Exception do
       MsgErroCriacao(FrmConsultaGenerica);
@@ -93,8 +80,7 @@ begin
   end;
 end;
 
-class function TAbrirConsulta.AbrirConsultaTarefa(edtCodUsuario: TLabeledEdit; edtNomeUsuario: TEdit;
-  SQLWhere: String): String;
+class function TFrmConsultaGenerica.AbrirConsultaTarefa(aEdtCodUsuario, aEdtNomeUsuario: TCustomEdit; aSQLWhere: String): String;
 begin
    try
     try
@@ -109,7 +95,7 @@ begin
              ' FROM TAREFAS T ' +
              ' INNER JOIN USUARIO_TAREFA UT ON UT.COD_TAREFA = T.CODIGO   ' ;
 
-      ControllerUsuario.ConsultarUsuarios(VPSQL + SQLWhere);
+      ControllerUsuario.ConsultarUsuarios(VPSQL + aSQLWhere);
 
       if (ControllerUsuario.cdsConsulta.IsEmpty) then
       begin
@@ -120,7 +106,7 @@ begin
       FrmConsultaGenerica.Caption:= 'Consultar Tarefas';
       FrmConsultaGenerica.ShowModal;
 
-      if (CodUsu <> 0) then
+      if (FCodUsu <> 0) then
       begin
         if (edtCodUsuario <> nil) then
           edtCodUsuario.Text  := ControllerUsuario.cdsConsulta.FieldByName('CODIGO').AsString;
@@ -128,7 +114,7 @@ begin
         if (edtNomeUsuario <> nil) then
           edtNomeUsuario.Text := ControllerUsuario.cdsConsulta.FieldByName('NOME').AsString;;
 
-        Consultar:= (edtCodUsuario = nil) and (edtNomeUsuario = nil) and (SQLWhere = '');
+        FConsultar:= (edtCodUsuario = nil) and (edtNomeUsuario = nil) and (aSQLWhere = '');
       end;
     except on E: Exception do
       MsgErroCriacao(FrmConsultaGenerica);
@@ -138,7 +124,7 @@ begin
   end;
 end;
 
-class function TAbrirConsulta.AbrirConsultaUsuario(edtCodUsuario: TLabeledEdit; edtNomeUsuario, edtSenha: TEdit; cmbDireitos: TComboBox; SQLWhere: String): String;
+class function TFrmConsultaGenerica.AbrirConsultaUsuario(aEdtCodUsuario, aEdtNomeUsuario, aEdtSenha: TCustomEdit; aCmbDireitos: TComboBox; aSQLWhere: String): String;
 begin
   try
     try
@@ -146,7 +132,7 @@ begin
 
       VPSQL:= 'SELECT CODIGO, NOME, SENHA, DIREITO, CASE WHEN DIREITO = 0 THEN ''SUPERVISOR'' ELSE ''OPERADOR'' END DIREITO_DESCRICAO FROM USUARIOS ';
 
-      ControllerUsuario.ConsultarUsuarios(VPSQL + SQLWhere);
+      ControllerUsuario.ConsultarUsuarios(VPSQL + aSQLWhere);
 
       if (ControllerUsuario.cdsConsulta.IsEmpty) then
       begin
@@ -157,7 +143,7 @@ begin
       FrmConsultaGenerica.Caption:= 'Consultar Usuários';
       FrmConsultaGenerica.ShowModal;
 
-      if (CodUsu <> 0) or (ControllerUsuario.cdsConsulta.FieldByName('NOME').AsString = 'ADM') then
+      if (FCodUsu <> 0) or (ControllerUsuario.cdsConsulta.FieldByName('NOME').AsString = 'ADM') then
       begin
         if (edtCodUsuario <> nil) then
           edtCodUsuario.Text  := ControllerUsuario.cdsConsulta.FieldByName('CODIGO').AsString;
@@ -173,7 +159,7 @@ begin
 
         SUPERVISOR:= ControllerUsuario.cdsConsulta.FieldByName('DIREITO_DESCRICAO').AsString = 'SUPERVISOR';
 
-        Consultar:= (edtCodUsuario = nil) and (edtNomeUsuario = nil) and (SQLWhere = '');
+        FConsultar:= (edtCodUsuario = nil) and (edtNomeUsuario = nil) and (aSQLWhere = '');
       end;
     except on E: Exception do
       MsgErroCriacao(FrmConsultaGenerica);
@@ -190,13 +176,13 @@ end;
 
 procedure TFrmConsultaGenerica.FormShow(Sender: TObject);
 begin
-  if (Consultar) then
+  if (FConsultar) then
     btnSelecionar.Enabled:= False;
 end;
 
 procedure TFrmConsultaGenerica.actSairExecute(Sender: TObject);
 begin
-  CodUsu:= 0;
+  FCodUsu:= 0;
   Self.Close;
 end;
 
@@ -204,7 +190,7 @@ procedure TFrmConsultaGenerica.actSelecionarExecute(Sender: TObject);
 begin
   if not(dbgConsulta.DataSource.DataSet.IsEmpty) then
   begin
-    CodUsu:= dbgConsulta.DataSource.DataSet.FieldByName('CODIGO').AsInteger;
+    FCodUsu:= dbgConsulta.DataSource.DataSet.FieldByName('CODIGO').AsInteger;
     Close;
   end;
 end;
