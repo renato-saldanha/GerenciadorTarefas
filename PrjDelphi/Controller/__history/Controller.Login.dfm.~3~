@@ -1,0 +1,26 @@
+object ControllerLogin: TControllerLogin
+  Height = 265
+  Width = 311
+  object cdsLogin: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    ProviderName = 'dspLogin'
+    Left = 8
+    Top = 112
+  end
+  object QryLogin: TFDQuery
+    Left = 136
+    Top = 120
+  end
+  object MtbLogin: TFDMemTable
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    Left = 136
+    Top = 184
+  end
+end

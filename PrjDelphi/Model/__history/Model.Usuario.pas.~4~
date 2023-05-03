@@ -1,0 +1,13 @@
+unit Model.Usuario;
+
+interface
+type
+  TModelUsuario = class
+    private
+    public
+      property Nome: String;
+  end;
+
+implementation
+
+end.

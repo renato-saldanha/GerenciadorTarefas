@@ -1,0 +1,37 @@
+unit Regra.Interfaces;
+
+interface
+
+uses
+  Data.SqlExpr, Vcl.StdCtrls, FireDAC.Comp.Client;
+
+type
+  iControllerConexao = interface
+    ['{E361E003-A197-47E7-93C4-CE446AF15EA8}']
+
+    function AbrirQuery(Qry: TFDQuery; sSQL: string): iControllerConexao;
+    function ConfigurarConexao(): iControllerConexao;
+    function EfetuarConsultaAuxiliar(aQryAux: TFDQuery; aSQL: String): Integer;
+  end;
+
+  iControllerLogin = interface
+    ['{AE0F2066-1576-44E1-93DB-066B6737D017}']
+
+    function SenhaValidada(codUsuario, senha: string): boolean;
+  end;
+
+  iControllerUsuario = interface
+    ['{35F3E7CE-CB22-4BFA-80A4-165E98D87A44}']
+
+    function ExcluirUsuario(aCodigo: string): Integer;
+    function InserirUsuario(aNome, aDireito, aSenha: string): Integer;
+    function AlterarUsuario(aCodigo, aNome, aDireito, aSenha: string): Integer;
+
+    function ConsultarUsuarios(aSQL: String): Boolean;
+    function GetNomeUsuario(aCodigo: String): String;
+    function ListarTiposUsuarios(aComboBox: TComboBox): Integer;
+  end;
+
+implementation
+
+end.

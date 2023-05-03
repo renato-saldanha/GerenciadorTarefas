@@ -1,0 +1,4 @@
+object ControllerConexao: TControllerConexao
+  Height = 222
+  Width = 287
+end

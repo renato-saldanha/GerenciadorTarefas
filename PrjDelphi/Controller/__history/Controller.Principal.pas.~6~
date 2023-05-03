@@ -1,0 +1,64 @@
+unit Controller.Principal;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.FMTBcd, Datasnap.Provider,
+  Datasnap.DBClient, Data.DB, Data.SqlExpr, Vcl.Dialogs,
+  Controller.Conexao,
+  Uteis;
+
+type
+  TControllerPrincipal = class(TDataModule)
+    qryConsTarefas: TSQLQuery;
+    cdsConsTarefas: TClientDataSet;
+    dspConsTarefas: TDataSetProvider;
+    qryAux: TSQLQuery;
+  private
+
+    { Private declarations }
+  public
+
+    function LimparConsultaTarefas: Boolean;
+    procedure CriarADM();
+    { Public declarations }
+  end;
+
+var
+  ControllerPrincipal: TControllerPrincipal;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+procedure TControllerPrincipal.CriarADM();
+begin
+  try
+    qryAux.Close;
+    qryAux.SQLConnection:= ControllerConexao.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add('INSERT INTO USUARIOS(CODIGO, NOME, SENHA, DIREITO) VALUES(0, ''ADM'', ''123'', 0)');
+    qryAux.ExecSQL;
+  except on E: Exception do
+    MsgErroConexao(qryAux);
+  end;
+end;
+
+function TControllerPrincipal.LimparConsultaTarefas(): Boolean;
+begin
+  Result:= False;
+
+  try
+    cdsConsTarefas.Close;
+  except on E: Exception do
+    begin
+      Result:= False;
+      MsgErroConexao(cdsConsTarefas);
+    end;
+  end;
+end;
+
+
+end.

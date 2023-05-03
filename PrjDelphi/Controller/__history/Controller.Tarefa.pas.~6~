@@ -1,0 +1,287 @@
+unit Controller.Tarefa;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.FMTBcd, Data.DB, Data.SqlExpr, Vcl.Dialogs,
+  Controller.Conexao;
+
+type
+  TControllerTarefa = class(TDataModule)
+    qryAux: TSQLQuery;
+  private
+
+    function GetUltimoCodTarefa: String;
+    { Private declarations }
+  public
+    function AlterarTarefa(CodTarefa, Nome: string; Tipo: Integer): Integer;
+    function ExcluirTarefa(CodTarefa: string): Integer;
+    function InserirTarefa(CodUsuario, Nome: string; Tipo: Integer): Integer;
+    function ConsultarTarefas(CodUsuario : String; Situacao: Integer): Boolean;
+
+    function TarefaExistente(CodTarefa: String): Boolean;
+    function GetNomeTarefa(CodTarefa: String): String;
+    function GetTipoTarefa(CodTarefa: String): Integer;
+    { Public declarations }
+  end;
+
+var
+  ControllerTarefa: TControllerTarefa;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+uses Uteis;
+
+{$R *.dfm}
+
+function TControllerTarefa.ExcluirTarefa(CodTarefa: string): Integer;
+begin
+  try
+    qryAux.Close;
+    qryAux.SQLConnection:= ControllerConexao.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add('DELETE FROM TAREFAS WHERE CODIGO = ' + CodTarefa);
+    Result:= qryAux.ExecSQL();
+
+    ShowMessage('Registro excluído!');
+  except on E: Exception do
+    MsgErroConexao(qryAux);
+  end;
+end;
+
+function TControllerTarefa.InserirTarefa(CodUsuario, Nome: string; Tipo: Integer): Integer;
+var
+  CodTarefa: String;
+begin
+  try
+    sSQL:= ' INSERT INTO TAREFAS (NOME, TIPO) ' +
+           ' VALUES(' + QuotedStr(Nome) +
+           ',' + IntToStr(Tipo) + ')';
+
+    qryAux.Close;
+    qryAux.SQLConnection:= ControllerConexao.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add(sSQL);
+    qryAux.ExecSQL();
+
+    CodTarefa:= GetUltimoCodTarefa();
+
+    sSQL:= ' INSERT INTO USUARIO_TAREFA (COD_USUARIO, COD_TAREFA) ' +
+           ' VALUES(' + CodUsuario +
+           ',' + CodTarefa + ')';
+
+    qryAux.Close;
+    qryAux.SQLConnection:= ControllerConexao.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add(sSQL);
+    Result:= qryAux.ExecSQL();
+
+    ShowMessage('Registro inserido!');
+
+  except on E: Exception do
+    MsgErroConexao(qryAux);
+  end;
+end;
+
+function TControllerTarefa.AlterarTarefa(CodTarefa, Nome: string; Tipo: Integer): Integer;
+begin
+  try
+    sSQL:= ' UPDATE TAREFAS SET ' +
+           ' NOME = ' + QuotedStr(Nome) +
+           ', TIPO = ' + IntToStr(Tipo) +
+           ' WHERE CODIGO = ' + CodTarefa;
+
+    qryAux.Close;
+    qryAux.SQLConnection:= ControllerConexao.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add(sSQL);
+    Result:= qryAux.ExecSQL();
+
+    ShowMessage('Registro alterado!');
+  except on E: Exception do
+    MsgErroConexao(qryAux);
+  end;
+end;
+
+function TControllerTarefa.GetUltimoCodTarefa(): String;
+begin
+  try
+    sSQL:= ' SELECT FIRST 1 CODIGO FROM TAREFAS ORDER BY CODIGO DESC';
+
+    qryAux.Close;
+    qryAux.SQLConnection:= ControllerConexao.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add(sSQL);
+    qryAux.Open();
+
+    if (qryAux.FieldByName('CODIGO').AsInteger > 0) then
+      Result:= qryAux.FieldByName('CODIGO').AsString
+    else
+      Result:= '1';
+  except on E: Exception do
+    MsgErroConexao(qryAux);
+  end;
+end;
+
+function TControllerTarefa.GetTipoTarefa(CodTarefa: String): Integer;
+begin
+  try
+    qryAux.Close;
+    qryAux.SQLConnection:= ControllerConexao.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add('SELECT TIPO FROM TAREFAS WHERE CODIGO = ' + CodTarefa);
+    qryAux.Open;
+
+    if not (qryAux.IsEmpty) then
+      Result:= qryAux.FieldByName('TIPO').AsInteger
+    else
+      Result:= 0;
+
+  except on E: Exception do
+    begin
+      Result:= 0;
+      MsgErroConexao(qryAux);
+    end;
+  end;
+end;
+
+function TControllerTarefa.TarefaExistente(CodTarefa: String): boolean;
+begin
+  try
+    qryAux.Close;
+    qryAux.SQLConnection:= ControllerConexao.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add('SELECT NOME FROM TAREFAS WHERE CODIGO = ' + CodTarefa);
+    qryAux.Open;
+
+    Result:= not (qryAux.IsEmpty);
+
+  except on E: Exception do
+    begin
+      Result:= False;
+      MsgErroConexao(qryAux);
+    end;
+  end;
+end;
+
+function TControllerTarefa.ListarTiposUsuarios(comboBox: TComboBox): Integer;
+var
+  Lista: TStringList;
+begin
+  try
+    Lista:= TStringList.Create;
+
+    qryAux.Close;
+    qryAux.SQLConnection:= Controller.Conexao.con;
+    qryAux.SQL.Clear;
+    qryAux.SQL.Add(' SELECT  ''TODOS'' SITUACAO FROM RDB$DATABASE   ' +
+                   ' UNION ALL                                      ' +
+                   ' SELECT  ''DIÁRIO'' SITUACAO FROM RDB$DATABASE   ' +
+                   ' UNION ALL                                      ' +
+                   ' SELECT ''SEMANAL'' FROM RDB$DATABASE           ' +
+                   ' UNION ALL                                      ' +
+                   ' SELECT ''QUINZENAL'' FROM RDB$DATABASE         ' +
+                   ' UNION ALL                                      ' +
+                   ' SELECT ''MENSAL'' FROM RDB$DATABASE            ');
+    qryAux.Open;
+
+    if not (qryAux.IsEmpty) then
+    begin
+      qryAux.First;
+      while not (qryAux.Eof) do
+      begin
+        comboBox.AddItem(qryAux.FieldByName('SITUACAO').AsString, nil);
+        qryAux.Next;
+      end;
+
+      Result:= Lista.Count;
+    end
+    else
+      Result:= 0;
+
+  except on E: Exception do
+    begin
+      Result:= 0;
+      MsgErroConexao(qryAux);
+    end;
+  end;
+end;
+
+function TControllerTarefa.ConsultarTarefas(CodUsuario : String; Situacao: Integer): Boolean;
+begin
+  Result:= False;
+
+  sSQL:= ' SELECT T.CODIGO, T.NOME TAREFA,                            ' +
+         '        CASE WHEN T.TIPO = 0 then ''Diário''                ' +
+         '             WHEN T.TIPO = 1 then ''Semanal''               ' +
+         '             WHEN T.TIPO = 2 then ''Quinzenal''             ' +
+         '             WHEN T.TIPO = 3 then ''Mensal''                ' +
+         '        END TIPO                                            ' +
+         ' FROM TAREFAS T                                             ' +
+         ' INNER JOIN USUARIO_TAREFA UT ON UT.COD_TAREFA = T.CODIGO   ' +
+         ' INNER JOIN USUARIOS U ON U.CODIGO = UT.COD_USUARIO         ' +
+         ' WHERE UT.COD_USUARIO = ' + CodUsuario ;
+
+  if (Situacao >= 0) then
+    sSQL:= sSQL + ' AND T.TIPO = ' + IntToStr(Situacao);
+
+  try
+    qryConsTarefas.Close;
+    cdsConsTarefas.Close;
+    qryConsTarefas.SQLConnection:= ControllerConexao.con;
+    cdsConsTarefas.CommandText:= sSQL;
+    cdsConsTarefas.Open;
+
+    if (cdsConsTarefas.IsEmpty) then
+    begin
+      ShowMessage('Essa busca não retornou registros.');
+      Exit;
+    end;
+
+  except on E: Exception do
+    begin
+      Result:= False;
+      MsgErroConexao(cdsConsTarefas);
+    end;
+  end;
+end;
+
+function TControllerPrincipal.LimparConsultaTarefas(): Boolean;
+begin
+  Result:= False;
+
+  try
+    cdsConsTarefas.Close;
+  except on E: Exception do
+    begin
+      Result:= False;
+      MsgErroConexao(cdsConsTarefas);
+    end;
+  end;
+end;
+
+function TControllerUsuario.GetNomeTarefa(CodTarefa: String): String;
+begin
+  try
+    QryUsuarios.Close;
+    QryUsuarios.SQLConnection:= ControllerConexao.Conexao;
+    QryUsuarios.SQL.Clear;
+    QryUsuarios.SQL.Add('SELECT NOME FROM TAREFAS WHERE CODIGO = ' + CodTarefa);
+    QryUsuarios.Open;
+
+    if not (QryUsuarios.IsEmpty) then
+      Result:= QryUsuarios.FieldByName('NOME').AsString
+    else
+      Result:= '';
+
+  except on E: Exception do
+    begin
+      Result:= '';
+      MsgErroConexao(QryUsuarios);
+    end;
+  end;
+end;
+
+end.

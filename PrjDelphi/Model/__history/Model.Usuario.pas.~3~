@@ -1,0 +1,14 @@
+unit Model.Usuario;
+
+interface
+type
+  TModelUsuario = class
+    private
+      FNome: String;
+    public
+      property Nome: String read FNome write FNome;
+  end;
+
+implementation
+
+end.

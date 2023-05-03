@@ -1,0 +1,25 @@
+program PrjControleTarefas;
+
+uses
+  Vcl.Forms,
+  Form.Principal in 'Form.Principal.pas' {frmPrincipal},
+  Regra.ControllerConexao in 'Controller\Regra.ControllerConexao.pas' {ControllerConexao: TDataModule},
+  Form.Cadastro.Usuarios in 'View\Form.Cadastro.Usuarios.pas' {FrmCadastroUsuarios},
+  Form.Login in 'View\Form.Login.pas' {FrmLogin},
+  Regra.ControllerLogin in 'Controller\Regra.ControllerLogin.pas' {dmLogin: TDataModule},
+  Uteis in 'Util\Uteis.pas',
+  Form.Consulta.Generica in 'View\Form.Consulta.Generica.pas' {FrmConsultaGenerica},
+  Form.Cadastro.Tarefas in 'View\Form.Cadastro.Tarefas.pas' {FrmCadastroTarefas},
+  Regra.ControllerUsuario in 'Controller\Regra.ControllerUsuario.pas' {ControllerUsuario: TDataModule},
+  uDmPrincipal in 'Controller\uDmPrincipal.pas' {dmPrincipal: TDataModule},
+  Regra.ControllerTarefa in 'Controller\Regra.ControllerTarefa.pas' {ControllerTarefa: TDataModule};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TControllerConexao, ControllerConexao);
+  Application.CreateForm(TdmPrincipal, dmPrincipal);
+  Application.CreateForm(TfrmPrincipal, frmPrincipal);
+  Application.Run;
+end.

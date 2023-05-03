@@ -1,0 +1,8 @@
+object ControllerUsuario: TControllerUsuario
+  Height = 176
+  Width = 252
+  object QryUsuarios: TFDQuery
+    Left = 32
+    Top = 80
+  end
+end

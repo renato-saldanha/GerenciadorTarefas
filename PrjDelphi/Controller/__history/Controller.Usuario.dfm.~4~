@@ -1,0 +1,25 @@
+object ControllerUsuario: TControllerUsuario
+  Height = 176
+  Width = 252
+  object qryAux: TSQLQuery
+    MaxBlobSize = -1
+    Params = <>
+    Left = 95
+    Top = 8
+  end
+  object MtbUsuarios: TFDMemTable
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    Left = 48
+    Top = 88
+  end
+  object QryUsuarios: TFDQuery
+    Left = 144
+    Top = 72
+  end
+end
